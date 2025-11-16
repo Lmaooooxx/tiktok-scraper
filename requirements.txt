@@ -1,3 +1,4 @@
 TikTokApi 
 playwright
 nest_asyncio
+streamlit
