@@ -27,7 +27,6 @@ from tiktok_scraper.scraper_impl import TikTokScraperImpl
 # ===== 3️⃣ Hàm async lấy video hôm nay =====
 async def fetch_today_videos(usernames: list, cookies: list):
     scraper = TikTokScraperImpl(cookies=cookies)
-    await scraper.setup()
 
     results = {}  # {username: [videos]}
 
@@ -35,13 +34,12 @@ async def fetch_today_videos(usernames: list, cookies: list):
         videos = await scraper.get_today_videos(username)
         results[username] = videos
 
-    await scraper.cleanup()
     return results
 
 # ===== 4️⃣ Streamlit UI =====
 st.set_page_config(page_title="TikTok Today", layout="centered")
 st.title("TikTok Today – Lấy video đăng hôm nay")
-st.write("Nhập **1 hoặc nhiều** username TikTok, cách nhau bằng dấu phẩy.")
+st.write("Nhập username TikTok.")
 
 # Load cookies tự động
 cookies_file = "cookies.json"
@@ -84,7 +82,6 @@ if run_btn:
                         st.write(f"**Video ID:** {v['id']}")
                         st.write(f"**Mô tả:** {v['desc']}")
                         st.write(f"**Ngày:** {v['date']}")
-                        st.write(f"**Comments:** {v['comments']}")
                         st.write(f"[🔗 Xem video]({v['url']})")
                         st.write("---")
 
