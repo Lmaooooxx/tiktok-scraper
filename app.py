@@ -21,21 +21,27 @@ except ModuleNotFoundError:
 if sys.platform.startswith("win"):
     asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
 
-# ===== 2️⃣ Import TikTokScraperImpl sau khi patch =====
+# ===== 2️⃣ Import TikTokScraperImpl sau patch =====
 from tiktok_scraper.scraper_impl import TikTokScraperImpl
 
 # ===== 3️⃣ Hàm async lấy video hôm nay =====
-async def fetch_today_videos(username: str, cookies: list):
+async def fetch_today_videos(usernames: list, cookies: list):
     scraper = TikTokScraperImpl(cookies=cookies)
     await scraper.setup()
-    videos = await scraper.get_today_videos(username)
+
+    results = {}  # {username: [videos]}
+
+    for username in usernames:
+        videos = await scraper.get_today_videos(username)
+        results[username] = videos
+
     await scraper.cleanup()
-    return videos
+    return results
 
 # ===== 4️⃣ Streamlit UI =====
 st.set_page_config(page_title="TikTok Today", layout="centered")
 st.title("TikTok Today – Lấy video đăng hôm nay")
-st.write("Nhập username TikTok và hệ thống sẽ trả về danh sách video được đăng **hôm nay**.")
+st.write("Nhập **1 hoặc nhiều** username TikTok, cách nhau bằng dấu phẩy.")
 
 # Load cookies tự động
 cookies_file = "cookies.json"
@@ -46,31 +52,41 @@ if os.path.exists(cookies_file):
 else:
     st.warning(f"Không tìm thấy file {cookies_file}. TikTok có thể yêu cầu đăng nhập lại.")
 
-# Nhập username TikTok  
-username = st.text_input("Nhập TikTok username:", "")
+# Nhập username TikTok
+raw_input = st.text_input("Nhập TikTok username :", "")
 
-# Button lấy video
+# Button
 run_btn = st.button("Lấy video hôm nay")
 
 if run_btn:
-    if username.strip() == "":
-        st.warning("Vui lòng nhập username!")
+    usernames = [u.strip() for u in raw_input.split(",") if u.strip()]
+
+    if not usernames:
+        st.warning("Vui lòng nhập ít nhất 1 username!")
     else:
-        st.info("Đang xử lý, đợi tí nhé...")
+        st.info("Đang xử lý...")
+
         try:
-            videos = asyncio.run(fetch_today_videos(username.strip(), cookies))
+            results = asyncio.run(fetch_today_videos(usernames, cookies))
 
-            st.success(f"Tìm thấy {len(videos)} video hôm nay cho @{username}")
+            # ---- Hiển thị kết quả ----
+            for username in usernames:
+                videos = results.get(username, [])
 
-            if len(videos) == 0:
-                st.warning("Không có video nào hôm nay.")
-            else:
-                for v in videos:
-                    st.subheader(f"Video ID: {v['id']}")
-                    st.write(f"**Mô tả:** {v['desc']}")
-                    st.write(f"**Ngày:** {v['date']}")
-                    st.write(f"[Xem video]({v['url']})")
-                    st.write("---")
+                st.subheader(f"@{username}")
+
+                if not videos:
+                    st.warning(f"@{username} không có video nào đăng hôm nay.")
+                else:
+                    st.success(f"{len(videos)} video hôm nay từ @{username}")
+
+                    for v in videos:
+                        st.write(f"**Video ID:** {v['id']}")
+                        st.write(f"**Mô tả:** {v['desc']}")
+                        st.write(f"**Ngày:** {v['date']}")
+                        st.write(f"**Comments:** {v['comments']}")
+                        st.write(f"[🔗 Xem video]({v['url']})")
+                        st.write("---")
 
         except Exception as e:
             st.error(f"Lỗi: {e}")
