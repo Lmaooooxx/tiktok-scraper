@@ -56,11 +56,11 @@ if run_btn:
     if username.strip() == "":
         st.warning("Vui lòng nhập username!")
     else:
-        st.info("⏳ Đang xử lý, đợi tí nhé...")
+        st.info("Đang xử lý, đợi tí nhé...")
         try:
             videos = asyncio.run(fetch_today_videos(username.strip(), cookies))
 
-            st.success(f"🎉 Tìm thấy {len(videos)} video hôm nay cho @{username}")
+            st.success(f"Tìm thấy {len(videos)} video hôm nay cho @{username}")
 
             if len(videos) == 0:
                 st.warning("Không có video nào hôm nay.")
