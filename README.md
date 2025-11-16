@@ -21,7 +21,7 @@ project/
 ```
 ## Cài đặt
 1. Clone project hoặc tải về máy:
-2. Tạo môi trường ảo:
+2. Tạo môi trường ảo(nên dùng):
 ```bash
 python -m venv venv
 # Linux/macOS
