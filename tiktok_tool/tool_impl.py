@@ -1,30 +1,29 @@
 import json
+import os
 from tiktok_scraper.scraper_impl import TikTokScraperImpl
 
 class TikTokToolImpl:
     def __init__(self, cookies_file="cookies.json"):
+        if not os.path.exists(cookies_file):
+            raise FileNotFoundError(f"File {cookies_file} không tồn tại.")
         with open(cookies_file, "r", encoding="utf-8") as f:
             cookies = json.load(f)
         self.scraper = TikTokScraperImpl(cookies)
 
-    async def run(self, channels_file="channels.txt"):
+    async def run(self):
         await self.scraper.setup()
 
-        # Đọc danh sách kênh
-        with open(channels_file, "r", encoding="utf-8") as f:
-            channels = [line.strip() for line in f if line.strip()]
+        username = input("Nhập ID TikTok: ").strip()
 
-        # Duyệt từng kênh
-        for channel in channels:
-            print(f"Đang xử lý kênh: {channel}")
-            videos = await self.scraper.get_today_videos(channel)
-            if not videos:
-                print("Không có video nào được đăng hôm nay.")
-            else:
-                print(f"Tìm thấy {len(videos)} video hôm nay:")
-                for v in videos:
-                    print(v)
-            print("-" * 50)
+        print(f"Đang lấy video hôm nay của: {username}")
 
-        # Cleanup session
+        videos = await self.scraper.get_today_videos(username)
+
+        if not videos:
+            print("❌ Không có video nào đăng hôm nay.")
+        else:
+            print(f"✅ Tìm thấy {len(videos)} video hôm nay:\n")
+            for v in videos:
+                print(f"- {v['url']}")
+
         await self.scraper.cleanup()
