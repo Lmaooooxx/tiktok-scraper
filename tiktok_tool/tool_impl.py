@@ -20,9 +20,9 @@ class TikTokToolImpl:
         videos = await self.scraper.get_today_videos(username)
 
         if not videos:
-            print("❌ Không có video nào đăng hôm nay.")
+            print("Không có video nào đăng hôm nay.")
         else:
-            print(f"✅ Tìm thấy {len(videos)} video hôm nay:\n")
+            print(f"Tìm thấy {len(videos)} video hôm nay:\n")
             for v in videos:
                 print(f"- {v['url']}")
 

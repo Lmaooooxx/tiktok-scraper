@@ -34,7 +34,7 @@ async def fetch_today_videos(username: str, cookies: list):
 
 # ===== 4️⃣ Streamlit UI =====
 st.set_page_config(page_title="TikTok Today", layout="centered")
-st.title("📌 TikTok Today – Lấy video đăng hôm nay")
+st.title("TikTok Today – Lấy video đăng hôm nay")
 st.write("Nhập username TikTok và hệ thống sẽ trả về danh sách video được đăng **hôm nay**.")
 
 # Load cookies tự động
@@ -50,7 +50,7 @@ else:
 username = st.text_input("Nhập TikTok username:", "")
 
 # Button lấy video
-run_btn = st.button("🚀 Lấy video hôm nay")
+run_btn = st.button("Lấy video hôm nay")
 
 if run_btn:
     if username.strip() == "":
@@ -66,10 +66,10 @@ if run_btn:
                 st.warning("Không có video nào hôm nay.")
             else:
                 for v in videos:
-                    st.subheader(f"📹 Video ID: {v['id']}")
+                    st.subheader(f"Video ID: {v['id']}")
                     st.write(f"**Mô tả:** {v['desc']}")
                     st.write(f"**Ngày:** {v['date']}")
-                    st.write(f"[🔗 Xem video]({v['url']})")
+                    st.write(f"[Xem video]({v['url']})")
                     st.write("---")
 
         except Exception as e:
