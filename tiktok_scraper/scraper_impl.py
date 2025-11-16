@@ -43,8 +43,8 @@ class TikTokScraperImpl:
                     })
 
         except TimeoutError:
-            print("❌ Lỗi: Timeout khi tạo session. Hãy kiểm tra kết nối mạng và cookies.")
+            print("Lỗi: Timeout khi tạo session. Hãy kiểm tra kết nối mạng và cookies.")
         except Exception as e:
-            print(f"❌ Lỗi không xác định: {e}")
+            print(f"Lỗi không xác định: {e}")
 
         return today_videos
